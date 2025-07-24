@@ -694,3 +694,76 @@
                     width: card.offsetWidth,
 
                     height: card.offsetHeight
+                        
+                });
+
+
+                // PNG Download
+
+                const pngUrl = canvas.toDataURL('image/png');
+
+                const pngLink = document.createElement('a');
+
+                pngLink.href = pngUrl;
+
+                pngLink.download = 'student_id_card.png';
+
+                document.body.appendChild(pngLink);
+
+                pngLink.click();
+
+                document.body.removeChild(pngLink);
+
+                showMessage("ID Card downloaded as PNG!", "success");
+
+
+                // PDF Download
+
+                const { jsPDF } = window.jspdf;
+
+                // ID card dimensions in mm: 2.1 inches = 53.34 mm, 3.4 inches = 86.36 mm
+
+                const pdfWidth = 53.34;
+
+                const pdfHeight = 86.36;
+
+
+                // Create a new jsPDF instance with custom dimensions and portrait orientation
+
+                const pdf = new jsPDF({
+
+                    orientation: 'portrait', // Changed to portrait for vertical card
+
+                    unit: 'mm',
+
+                    format: [pdfWidth, pdfHeight]
+
+                });
+
+
+                const imgData = canvas.toDataURL('image/png');
+
+                // Add the image to the PDF, covering the entire page
+
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+                pdf.save('student_id_card.pdf');
+
+                showMessage("ID Card downloaded as PDF!", "success");
+
+
+            } catch (error) {
+
+                console.error("Error generating card:", error);
+
+                showMessage("Failed to generate card. Please try again.", "error");
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
