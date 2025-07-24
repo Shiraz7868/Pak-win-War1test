@@ -1,507 +1,696 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+
+<html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پاکستان جنگ بندی مبارک</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nastaliq+Nafees&display=swap" rel="stylesheet">
+
+    <title>Student ID Card Generator</title>
+
+    <!-- Tailwind CSS CDN -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- HTML2Canvas for capturing DOM as image -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- jsPDF for generating PDF -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        html, body {
-            height: 100%;
-            font-family: 'Nastaliq Nafees', 'Arial', sans-serif;
-            background-color: #f0f5e9;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
+
+        /* Custom styles for the ID card to ensure exact dimensions and professional look */
+
+        .id-card-container {
+
+            width: 2.1in; /* Standard vertical ID card width */
+
+            height: 3.4in; /* Standard vertical ID card height */
+
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+
+            position: relative; /* For absolute positioning of elements inside */
+
+            overflow: hidden; /* Hide anything that goes outside the card boundaries */
+
+            display: flex; /* Use flexbox for vertical alignment */
+
+            flex-direction: column; /* Stack children vertically */
+
+            align-items: center; /* Center items horizontally */
+
+            justify-content: flex-start; /* Align items to the start (top) */
+
+            padding: 0.35rem; /* Reduced padding for more content space */
+
+            border: 1px solid #e2e8f0; /* Thin light-gray outline */
+
+            font-family: 'Roboto', Arial, sans-serif; /* Clean sans-serif font */
+
         }
 
-        .main-container {
-            min-height: 100vh;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 30px 0;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0f0e9 100%);
+
+        /* Ensure images inside the card are responsive and fit their containers */
+
+        .id-card-container img {
+
+            max-width: 100%;
+
+            height: auto;
+
+            display: block;
+
         }
 
-        .container {
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 50, 20, 0.2);
-            width: 90%;
-            max-width: 550px;
-            margin: 20px 0;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid #1a6e1a;
-            animation: fadeIn 1s ease-out;
+
+        /* Hide the default file input text */
+
+        input[type="file"] {
+
+            color: transparent;
+
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
-        .header-image-container {
-            width: 100%;
-            height: 280px;
-            margin-bottom: 25px;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 4px solid #1a6e1a;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s;
-            position: relative;
-        }
+        /* Style for the custom file input button */
 
-        .header-image-container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
-        }
+        .file-input-button {
 
-        .header-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
+            background-color: #4F46E5; /* Indigo-600 */
 
-        .header-image:hover {
-            transform: scale(1.05);
-        }
-
-        h1 {
-            color: #1a6e1a;
-            margin-bottom: 25px;
-            font-size: 32px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-            font-weight: bold;
-            animation: textGlow 2s infinite alternate;
-        }
-
-        @keyframes textGlow {
-            from { text-shadow: 0 0 5px rgba(26, 110, 26, 0.5); }
-            to { text-shadow: 0 0 15px rgba(26, 110, 26, 0.8); }
-        }
-
-        p {
-            color: #333;
-            font-size: 20px;
-            line-height: 1.8;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .sender {
-            font-weight: bold;
-            color: #1a6e1a;
-            font-size: 22px;
-            display: inline-block;
-            padding: 0 10px;
-            border-radius: 5px;
-            background-color: rgba(26, 110, 26, 0.1);
-        }
-
-        .footer {
-            margin-top: 30px;
-            font-size: 16px;
-            color: #555;
-            font-style: italic;
-        }
-
-        .hearts {
-            color: #ff6b6b;
-            font-size: 28px;
-            margin: 25px 0;
-            animation: pulse 1.5s infinite, float 3s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .whatsapp-btn {
-            background: linear-gradient(to right, #25D366, #128C7E);
             color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 30px;
-            font-size: 18px;
+
+            padding: 0.5rem 1rem;
+
+            border-radius: 0.375rem; /* rounded-md */
+
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 25px auto;
-            text-decoration: none;
-            width: 240px;
-            box-shadow: 0 5px 15px rgba(18, 140, 126, 0.4);
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+
+            display: inline-block;
+
+            text-align: center;
+
+            font-size: 0.875rem; /* text-sm */
+
+            line-height: 1.25rem; /* leading-5 */
+
+            transition: background-color 0.2s;
+
         }
 
-        .whatsapp-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(18, 140, 126, 0.6);
+
+        .file-input-button:hover {
+
+            background-color: #4338CA; /* Indigo-700 */
+
         }
 
-        .whatsapp-btn:active {
-            transform: translateY(1px);
-        }
 
-        .whatsapp-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
+        /* Custom modal for messages */
 
-        .whatsapp-btn:hover::before {
-            left: 100%;
-        }
+        .custom-modal {
 
-        .whatsapp-btn img {
-            width: 24px;
-            margin-left: 12px;
-            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
-        }
+            position: fixed;
 
-        .name-input {
-            margin: 25px 0;
+            top: 50%;
+
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            background-color: #fff;
+
             padding: 20px;
-            background-color: rgba(249, 249, 249, 0.7);
-            border-radius: 15px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+            z-index: 1000;
+
+            text-align: center;
+
+            font-family: 'Inter', sans-serif;
+
+            color: #333;
+
         }
 
-        .name-input input {
+
+        .custom-modal.success {
+
+            border: 2px solid #28a745;
+
+            color: #28a745;
+
+        }
+
+
+        .custom-modal.error {
+
+            border: 2px solid #dc3545;
+
+            color: #dc3545;
+
+        }
+
+
+        /* Tricolor divider styles */
+
+        .tricolor-divider {
+
+            display: flex;
+
             width: 100%;
-            padding: 12px 15px;
-            margin: 12px 0;
-            border: 2px solid #1a6e1a;
-            border-radius: 30px;
-            font-size: 18px;
-            text-align: center;
-            font-family: 'Nastaliq Nafees', 'Arial', sans-serif;
-            transition: all 0.3s;
-            outline: none;
+
+            height: 2px; /* Thin line */
+
+            margin-top: 0.2rem; /* Space above divider */
+
+            margin-bottom: 0.5rem; /* Space below divider */
+
         }
 
-        .name-input input:focus {
-            border-color: #25D366;
-            box-shadow: 0 0 8px rgba(26, 110, 26, 0.3);
+        .tricolor-divider > div {
+
+            flex: 1;
+
+            height: 100%;
+
         }
 
-        .share-instruction {
-            margin-top: 15px;
-            font-size: 16px;
-            color: #1a6e1a;
-            font-weight: bold;
-            text-align: center;
-            animation: blink 2s infinite;
+        .saffron { background-color: #FF9933; } /* Saffron */
+
+        .white { background-color: #FFFFFF; } /* White */
+
+        .green { background-color: #138808; } /* India Green */
+
+
+        /* Specific styles for student photo and signature */
+
+        .student-photo-container {
+
+            width: 0.8in; /* Small square photo */
+
+            height: 0.8in;
+
+            background-color: #BFDBFE; /* Blue-100 */
+
+            border-radius: 0.25rem; /* rounded-md */
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            border: 1px solid #9CA3AF; /* Gray-400 border */
+
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+
+        .principal-signature-area {
+
+            text-align: center; /* Centered label */
+
+            line-height: 1; /* Adjust line height for signature text */
+
+            margin-top: 0.2rem; /* Space above signature */
+
         }
 
-        .confetti {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: #f00;
-            border-radius: 50%;
-            animation: confetti-fall 5s linear infinite;
-            z-index: 100;
+        .principal-signature-area img {
+
+            height: 0.35in; /* Adjust height to fit */
+
+            width: auto;
+
+            max-width: 0.8in; /* Max width for signature */
+
+            object-fit: contain;
+
+            display: inline-block;
+
+            vertical-align: bottom; /* Align with text baseline */
+
+            margin-bottom: 0.1rem; /* Space between image and label */
+
         }
 
-        @keyframes confetti-fall {
-            0% { transform: translateY(-100px) rotate(0deg) scale(1); opacity: 1; }
-            100% { transform: translateY(600px) rotate(360deg) scale(0); opacity: 0; }
-        }
-
-        .firework {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            box-shadow: 0 0 10px 5px;
-            animation: firework-explode 1s ease-out forwards;
-            opacity: 0;
-            z-index: 99;
-        }
-
-        @keyframes firework-explode {
-            0% { transform: translate(var(--x), var(--y)) scale(0); opacity: 1; }
-            100% { transform: translate(var(--x), var(--y)) scale(1); opacity: 0; }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(#1a6e1a, #25D366);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(#145614, #128C7E);
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-                border-radius: 15px;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-            
-            p {
-                font-size: 18px;
-            }
-            
-            .header-image-container {
-                height: 220px;
-            }
-        }
     </style>
+
 </head>
-<body>
-    <div class="main-container">
-        <div class="container">
-            <!-- Confetti and fireworks elements will be added here by JS -->
-            
-            <div class="header-image-container">
-                <img id="headerImage" class="header-image" src="https://iili.io/3vG9pNp.md.jpg" alt="پاکستان جنگ بندی مبارک">
+
+<body class="font-sans bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="flex flex-col lg:flex-row bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-6xl">
+
+        <!-- Left Panel: Edit Area -->
+
+        <div class="w-full lg:w-1/2 p-6 md:p-8 space-y-6 border-r border-gray-200">
+
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">ID Card Editor</h2>
+
+
+            <!-- Upload Options -->
+
+            <div class="space-y-4">
+
+                <label class="block text-sm font-medium text-gray-700">Upload College Logo</label>
+
+                <label for="collegeLogoUpload" class="file-input-button">Choose File</label>
+
+                <input type="file" id="collegeLogoUpload" accept="image/*" class="hidden">
+
             </div>
-            
-            <h1>پاکستان جنگ بندی مبارک</h1>
-            
-            <div class="hearts">❤️ ❤️ ❤️</div>
-            
-            <p>اللہ تعالیٰ پاکستان کو ہمیشہ سلامتی اور امن عطا فرمائے</p>
-            <p>ہم سب مل کر ملک کی حفاظت اور ترقی کریں گے</p>
-            <p>پاکستان کی سرحدیں محفوظ ہوں، عوام خوشحال ہوں</p>
-            <p>پاکستان پائندہ باد!</p>
-            
-            <div class="name-input">
-                <input type="text" id="userName" placeholder="اپنا نام درج کریں" oninput="updateSenderName()">
-                <div class="share-instruction">نام درج کرنے کے بعد واٹس ایپ پر بھیجیں</div>
+
+
+            <div class="space-y-4">
+
+                <label class="block text-sm font-medium text-gray-700">Upload Student Photo</label>
+
+                <label for="studentPhotoUpload" class="file-input-button">Choose File</label>
+
+                <input type="file" id="studentPhotoUpload" accept="image/*" class="hidden">
+
             </div>
-            
-            <p>بھیجیں: <span class="sender" id="senderName">آپ کا نام</span></p>
-            
-            <a href="#" class="whatsapp-btn" id="whatsappShare" onclick="shareOnWhatsApp(event)">
-                واٹس ایپ پر بھیجیں
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-            </a>
-            
-            <div class="footer">
-                <p id="recipientMessage" style="display:none;"><span id="friendName"></span> نے آپ کو پاکستان جنگ بندی مبارک باد دی ہے!</p>
-                <p>اس طرف سے بھیجا گیا ❤️</p>
-                <p>پاکستان زندہ باد!</p>
+
+
+            <div class="space-y-4">
+
+                <label class="block text-sm font-medium text-gray-700">Upload Principal Signature</label>
+
+                <label for="principalSignatureUpload" class="file-input-button">Choose File</label>
+
+                <input type="file" id="principalSignatureUpload" accept="image/*" class="hidden">
+
             </div>
+
+
+            <!-- Text Fields -->
+
+            <div class="space-y-4">
+
+                <label for="collegeNameInput" class="block text-sm font-medium text-gray-700">College Name:</label>
+
+                <input type="text" id="collegeNameInput" placeholder="N. C. College (Karimganj, Assam)" value="N. C. College (Karimganj, Assam)" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+            </div>
+
+
+            <div class="space-y-4">
+
+                <label for="nameInput" class="block text-sm font-medium text-gray-700">Name:</label>
+
+                <input type="text" id="nameInput" placeholder="Anil Kumar" value="Anil Kumar" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+            </div>
+
+
+            <div class="space-y-4">
+
+                <label for="classInput" class="block text-sm font-medium text-gray-700">Class:</label>
+
+                <input type="text" id="classInput" placeholder="12" value="12" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+            </div>
+
+
+            <div class="space-y-4">
+
+                <label for="rollNumberInput" class="block text-sm font-medium text-gray-700">Roll Number:</label>
+
+                <input type="text" id="rollNumberInput" placeholder="55" value="55" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+            </div>
+
+
+            <div class="space-y-4">
+
+                <label for="dobInput" class="block text-sm font-medium text-gray-700">Date of Birth:</label>
+
+                <input type="date" id="dobInput" value="2000-05-09" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+            </div>
+
+
+            <div class="space-y-4">
+
+                <label for="yearInput" class="block text-sm font-medium text-gray-700">Year:</label>
+
+                <input type="text" id="yearInput" placeholder="2025" value="2025" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+            </div>
+
+
+            <div class="space-y-4">
+
+                <label for="addressInput" class="block text-sm font-medium text-gray-700">Address (for bottom bar):</label>
+
+                <input type="text" id="addressInput" placeholder="N. C. College (Karimganj, Assam)" value="N. C. College (Karimganj, Assam)" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+            </div>
+
+
+            <div class="space-y-4">
+
+                <label for="mobileInput" class="block text-sm font-medium text-gray-700">Mobile Number (for bottom bar):</label>
+
+                <input type="tel" id="mobileInput" placeholder="9162830269" value="9162830269" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+            </div>
+
         </div>
+
+
+        <!-- Right Panel: Live Card View -->
+
+        <div class="w-full lg:w-1/2 p-6 md:p-8 flex flex-col items-center justify-center bg-gray-50 relative">
+
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Live ID Card Preview</h2>
+
+
+            <!-- ID Card Preview Area -->
+
+            <div id="idCardPreview" class="id-card-container bg-white rounded-lg shadow-lg text-black relative">
+
+                <!-- Top Section: Logo and College Name -->
+
+                <div class="flex items-center w-full mb-1">
+
+                    <img id="cardLogo" src="https://placehold.co/50x50/E0E7FF/4F46E5?text=Logo" alt="College Logo" class="w-12 h-12 rounded-full object-cover mr-2 border-2 border-gray-200 flex-shrink-0">
+
+                    <h1 id="cardCollegeName" class="text-xs font-extrabold text-center flex-grow">N. C. College (Karimganj, Assam)</h1>
+
+                </div>
+
+
+                <!-- Tricolor Divider Line -->
+
+                <div class="tricolor-divider">
+
+                    <div class="saffron"></div>
+
+                    <div class="white"></div>
+
+                    <div class="green"></div>
+
+                </div>
+
+
+                <!-- Main Content Area (Student Info + Photo/Signature) -->
+
+                <div class="flex w-full flex-grow px-1.5 pb-1 justify-between items-start">
+
+                    <!-- Student Information (Left-Aligned) -->
+
+                    <div class="flex flex-col text-[0.6rem] space-y-0.5 flex-grow pr-1">
+
+                        <p><span class="font-semibold">Name:</span> <span id="cardName"></span></p>
+
+                        <p><span class="font-semibold">Class:</span> <span id="cardClass"></span></p>
+
+                        <p><span class="font-semibold">Roll No.:</span> <span id="cardRollNumber"></span></p>
+
+                        <p><span class="font-semibold">D.O.B:</span> <span id="cardDob"></span></p>
+
+                        <p><span class="font-semibold">Year:</span> <span id="cardYear"></span></p>
+
+                    </div>
+
+
+                    <!-- Photo and Signature Section (Right-Aligned) -->
+
+                    <div class="flex flex-col items-end justify-between h-full pl-1">
+
+                        <!-- Student Photo -->
+
+                        <div class="student-photo-container mb-1">
+
+                            <img id="cardStudentPhoto" src="https://placehold.co/80x80/E0E7FF/4F46E5?text=Photo" alt="Student Photo" class="w-full h-full object-cover">
+
+                        </div>
+
+                        <p class="text-gray-600 text-[0.55rem] text-center mb-auto">Student Photo</p>
+
+
+                        <!-- Principal Signature Block -->
+
+                        <div class="principal-signature-area mt-auto">
+
+                            <img id="cardPrincipalSignature" src="https://placehold.co/100x40/E0E7FF/4F46E5?text=Signature" alt="Principal Signature">
+
+                            <p class="text-[0.5rem] font-bold">Principal Signature</p> <!-- Changed label and made bold -->
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Bottom Navy-Blue Strip -->
+
+                <div class="absolute bottom-0 left-0 w-full bg-blue-900 text-white text-[0.5rem] py-1 px-1 font-medium flex justify-center items-center text-center">
+
+                    <span id="cardAddressMobile"></span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Download Button -->
+
+            <button id="downloadCardButton" class="mt-8 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-md shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200">
+
+                Download Card
+
+            </button>
+
+        </div>
+
     </div>
 
-    <audio id="fireworksAudio" loop>
-        <source src="https://www.soundjay.com/misc/sounds/fireworks-01.mp3" type="audio/mpeg">
-    </audio>
 
     <script>
-        // Set image from URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const sender = urlParams.get('sender');
-        
-        // Check if this is a recipient view
-        if (sender) {
-            document.getElementById('senderName').textContent = decodeURIComponent(sender);
-            document.getElementById('userName').value = decodeURIComponent(sender);
-            document.getElementById('friendName').textContent = decodeURIComponent(sender);
-            document.getElementById('recipientMessage').style.display = 'block';
-            document.getElementById('userName').style.display = 'none';
-            document.querySelector('.share-instruction').style.display = 'none';
-        }
 
-        // Update sender name in real-time
-        function updateSenderName() {
-            const userName = document.getElementById('userName').value.trim();
-            document.getElementById('senderName').textContent = userName || 'آپ کا نام';
-        }
+        // Function to show a custom modal message
 
-        // WhatsApp share function
-        function shareOnWhatsApp(e) {
-            e.preventDefault();
-            const userName = document.getElementById('userName').value.trim();
-            
-            if (!userName) {
-                alert('براہ کرم اپنا نام درج کریں۔');
-                return;
+        function showMessage(message, type = 'info') {
+
+            const existingModal = document.querySelector('.custom-modal');
+
+            if (existingModal) {
+
+                existingModal.remove();
+
             }
-            
-            // Update sender name
-            document.getElementById('senderName').textContent = userName;
-            
-            // Generate shareable link with name
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.set('sender', userName);
-            const shareUrl = currentUrl.toString();
-            
-            // Custom message as requested
-            const message = `${userName} کی طرف سے پاکستان جنگ بندی مبارک ہو!\n\n"اللہ تعالیٰ پاکستان کو ہمیشہ سلامتی اور امن عطا فرمائے۔ ہم سب مل کر ملک کی حفاظت کریں گے۔ پاکستان پائندہ باد!"\n\nاس خصوصی پیغام کو دیکھنے کے لیے لنک پر کلک کریں:\n${shareUrl}`;
-            
-            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-            
-            // Celebrate
-            bigCelebration();
+
+
+            const modal = document.createElement('div');
+
+            modal.classList.add('custom-modal', type);
+
+            modal.textContent = message;
+
+            document.body.appendChild(modal);
+
+
+            setTimeout(() => {
+
+                modal.remove();
+
+            }, 3000); // Remove after 3 seconds
+
         }
 
-        // Play fireworks sound and create confetti
-        function celebrate() {
-            // Play sound
-            const audio = document.getElementById('fireworksAudio');
-            audio.volume = 0.2;
-            audio.play().catch(e => console.log('آواز چلانے میں مسئلہ: ', e));
-            
-            // Create confetti
-            createConfetti(30);
-            
-            // Create few fireworks
-            createFireworks(5);
-        }
-        
-        // Big celebration with more effects
-        function bigCelebration() {
-            // Play sound
-            const audio = document.getElementById('fireworksAudio');
-            audio.volume = 0.3;
-            audio.play().catch(e => console.log('آواز چلانے میں مسئلہ: ', e));
-            
-            // Create lots of confetti
-            createConfetti(100);
-            
-            // Create many fireworks
-            createFireworks(15);
-        }
-        
-        function createConfetti(count) {
-            const container = document.querySelector('.container');
-            for (let i = 0; i < count; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                confetti.style.animationDelay = Math.random() + 's';
-                confetti.style.width = (Math.random() * 10 + 5) + 'px';
-                confetti.style.height = confetti.style.width;
-                container.appendChild(confetti);
-                
-                // Remove confetti after animation
-                setTimeout(() => {
-                    confetti.remove();
-                }, 5000);
+
+        // Function to handle image uploads and update the card preview
+
+        function handleImageUpload(event, targetElementId) {
+
+            const file = event.target.files[0];
+
+            if (file) {
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+
+                    const imgElement = document.getElementById(targetElementId);
+
+                    imgElement.src = e.target.result;
+
+                    // Ensure the image is visible and has a placeholder if no image is uploaded
+
+                    if (imgElement.src.includes('placehold.co') && !e.target.result) {
+
+                        imgElement.classList.add('hidden');
+
+                    } else {
+
+                        imgElement.classList.remove('hidden');
+
+                    }
+
+                };
+
+                reader.readAsDataURL(file);
+
+            } else {
+
+                // If no file is selected, revert to placeholder or hide
+
+                const imgElement = document.getElementById(targetElementId);
+
+                if (targetElementId === 'cardLogo') imgElement.src = 'https://placehold.co/50x50/E0E7FF/4F46E5?text=Logo';
+
+                if (targetElementId === 'cardStudentPhoto') imgElement.src = 'https://placehold.co/80x80/E0E7FF/4F46E5?text=Photo';
+
+                if (targetElementId === 'cardPrincipalSignature') imgElement.src = 'https://placehold.co/100x40/E0E7FF/4F46E5?text=Signature';
+
+                imgElement.classList.remove('hidden'); // Ensure placeholders are visible
+
             }
-        }
-        
-        function createFireworks(count) {
-            const container = document.querySelector('.container');
-            const containerRect = container.getBoundingClientRect();
-            
-            for (let i = 0; i < count; i++) {
-                setTimeout(() => {
-                    const firework = document.createElement('div');
-                    firework.className = 'firework';
-                    
-                    // Random position in container
-                    const x = (Math.random() - 0.5) * containerRect.width;
-                    const y = (Math.random() - 0.5) * containerRect.height;
-                    
-                    firework.style.setProperty('--x', x + 'px');
-                    firework.style.setProperty('--y', y + 'px');
-                    firework.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                    
-                    container.appendChild(firework);
-                    
-                    // Remove firework after animation
-                    setTimeout(() => {
-                        firework.remove();
-                    }, 1000);
-                }, i * 300);
-            }
+
         }
 
-        // Initial celebration
-        setTimeout(() => {
-            celebrate();
-            // Create some random fireworks periodically
-            setInterval(() => {
-                if (Math.random() > 0.7) {
-                    createFireworks(3);
+
+        // Function to update text fields on the card preview
+
+        function updateCardText(inputId, cardElementId) {
+
+            const inputElement = document.getElementById(inputId);
+
+            const cardElement = document.getElementById(cardElementId);
+
+
+            // Set initial value
+
+            cardElement.textContent = inputElement.value;
+
+
+            // Add event listener for real-time updates
+
+            inputElement.addEventListener('input', () => {
+
+                cardElement.textContent = inputElement.value;
+
+                // Special handling for combined address/mobile
+
+                if (cardElementId === 'cardAddress' || cardElementId === 'cardMobile') {
+
+                    updateCombinedAddressMobile();
+
                 }
-            }, 3000);
-        }, 1000);
-    </script>
-</body>
-</html>
-<script type="text/javascript">
-	atOptions = {
-		'key' : '1c984e0d05b70b660c8f5085d495b10f',
-		'format' : 'iframe',
-		'height' : 90,
-		'width' : 728,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/1c984e0d05b70b660c8f5085d495b10f/invoke.js"></script>
-<script type="text/javascript">
-	atOptions = {
-		'key' : '1c984e0d05b70b660c8f5085d495b10f',
-		'format' : 'iframe',
-		'height' : 90,
-		'width' : 728,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/1c984e0d05b70b660c8f5085d495b10f/invoke.js"></script>
-<script type="text/javascript">
-	atOptions = {
-		'key' : '1c984e0d05b70b660c8f5085d495b10f',
-		'format' : 'iframe',
-		'height' : 90,
-		'width' : 728,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/1c984e0d05b70b660c8f5085d495b10f/invoke.js"></script>
+
+            });
+
+        }
+
+
+        // Function to update the combined address and mobile in the bottom bar
+
+        function updateCombinedAddressMobile() {
+
+            const address = document.getElementById('addressInput').value;
+
+            const mobile = document.getElementById('mobileInput').value;
+
+            document.getElementById('cardAddressMobile').textContent = `Address: ${address} — Mobile: ${mobile}`;
+
+        }
+
+
+
+        // Initialize all text fields and image uploads
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Image upload listeners
+
+            document.getElementById('collegeLogoUpload').addEventListener('change', (e) => handleImageUpload(e, 'cardLogo'));
+
+            document.getElementById('studentPhotoUpload').addEventListener('change', (e) => handleImageUpload(e, 'cardStudentPhoto'));
+
+            document.getElementById('principalSignatureUpload').addEventListener('change', (e) => handleImageUpload(e, 'cardPrincipalSignature'));
+
+
+            // Text field listeners
+
+            updateCardText('collegeNameInput', 'cardCollegeName'); // New: College Name editable
+
+            updateCardText('nameInput', 'cardName');
+
+            updateCardText('classInput', 'cardClass');
+
+            updateCardText('rollNumberInput', 'cardRollNumber');
+
+            updateCardText('dobInput', 'cardDob');
+
+            updateCardText('yearInput', 'cardYear');
+
+           
+
+            // Initial update for combined address/mobile
+
+            updateCombinedAddressMobile();
+
+            document.getElementById('addressInput').addEventListener('input', updateCombinedAddressMobile);
+
+            document.getElementById('mobileInput').addEventListener('input', updateCombinedAddressMobile);
+
+
+            // The college name is now editable via input, so no static setting here.
+
+            // document.getElementById('cardCollegeName').textContent = "N. C. College (Karimganj, Assam)";
+
+        });
+
+
+
+        // Download functionality
+
+        document.getElementById('downloadCardButton').addEventListener('click', async () => {
+
+            const card = document.getElementById('idCardPreview');
+
+
+            // Temporarily adjust card styles for high-resolution capture
+
+            // We need to capture at a higher resolution for 300 DPI output.
+
+            // The card is 2.1in x 3.4in. At 300 DPI, this is 630px x 1020px.
+
+            // Current CSS dimensions are based on browser DPI (typically 96 DPI).
+
+            // So, we'll use html2canvas's scale option.
+
+            const scaleFactor = 4; // This will effectively capture at 4x the rendered resolution
+
+
+            try {
+
+                // Capture the card with html2canvas
+
+                const canvas = await html2canvas(card, {
+
+                    scale: scaleFactor, // Scale up for high resolution
+
+                    useCORS: true, // Important for images loaded from data URLs
+
+                    logging: false, // Disable logging for cleaner console
+
+                    // Explicitly set width/height to match the original rendered size for html2canvas
+
+                    width: card.offsetWidth,
+
+                    height: card.offsetHeight
